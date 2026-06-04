@@ -1,133 +1,81 @@
-# pr-brief
+# 🤖 pr-brief
 
-> GitHub Action that auto-summarizes every pull request with AI. What changed, why it matters, potential risks, and what to test — posted as a PR comment automatically.
+[![Build Status](https://img.shields.io/github/actions/workflow/status/HayreBuilds/pr-brief/ci.yml?branch=main)](https://github.com/HayreBuilds/pr-brief/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NVIDIA NIM](https://img.shields.io/badge/NVIDIA-NIM-76B900?logo=nvidia&logoColor=white)](https://build.nvidia.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/HayreBuilds/pr-brief/pulls)
 
-```markdown
-## 📋 What Changed
-This PR refactors the authentication middleware to use JWT refresh tokens
-instead of session cookies, reducing server-side state requirements and
-enabling stateless horizontal scaling.
+**GitHub Action that auto-summarizes Pull Requests with AI. Get high-level context on every diff instantly.**
 
-## 🎯 Why It Matters
-The current session-based auth requires sticky sessions in production,
-blocking the planned multi-region deployment. This change makes auth
-stateless and cloud-native.
-
-## ⚠️ Potential Risks
-- Existing sessions will be invalidated on deploy — coordinate with
-  support team for user communication
-- JWT secret rotation requires coordinated deployment
-- Token expiry handling not yet tested on mobile clients
-
-## ✅ What to Test
-- [ ] Login flow creates valid JWT pair (access + refresh)
-- [ ] Refresh token renews access token correctly
-- [ ] Expired access token returns 401, not 500
-- [ ] Logout invalidates refresh token
-- [ ] Rate limiting still applies after auth change
-
-## 📁 Key Files
-- `middleware/auth.ts` — Core auth logic, verify before merging
-- `routes/session.ts` — New refresh token endpoint
-- `tests/auth.test.ts` — Coverage added for edge cases
-```
+> Spend less time reading code and more time reviewing logic. **pr-brief** analyzes your PR diffs and posts a clean, AI-generated summary as a comment—covering what changed, why it matters, and potential risks.
 
 ---
 
-## Setup (2 lines)
+## 🚀 Quick Setup
 
-**Step 1:** Add your NVIDIA API key to GitHub Secrets as `NVIDIA_API_KEY`  
-(Free at [build.nvidia.com](https://build.nvidia.com))
-
-**Step 2:** Create `.github/workflows/pr-brief.yml`:
+Add this to your `.github/workflows/pr-brief.yml`:
 
 ```yaml
 name: PR Brief
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  pull-requests: write
-  contents: read
+    types: [opened, synchronize]
 
 jobs:
-  pr-brief:
+  summarize:
     runs-on: ubuntu-latest
     steps:
-      - uses: yourusername/pr-brief@v1
+      - uses: HayreBuilds/pr-brief@v1
         with:
           nvidia-api-key: ${{ secrets.NVIDIA_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-That's it. Every new PR gets an AI summary as a comment.
+---
 
-## Configuration
+## ✨ Key Features
 
-```yaml
-- uses: yourusername/pr-brief@v1
-  with:
-    nvidia-api-key: ${{ secrets.NVIDIA_API_KEY }}
-    
-    # Optional: change the model
-    model: meta/llama-3.3-70b-instruct
-    
-    # Optional: limit diff size (for large PRs)
-    max-diff-lines: 300
-    
-    # Optional: update existing comment instead of creating new ones
-    update-existing: true
-```
+- **📝 Intelligent Summaries**: Understands the *intent* of changes, not just the lines.
+- **⚠️ Risk Detection**: Automatically flags potential breaking changes or security risks.
+- **📁 File Categorization**: Groups changes by impact (e.g., Logic, UI, Docs, Tests).
+- **🧠 Powered by NVIDIA NIM**: Uses `Nemotron-Ultra` (550B) for deep reasoning.
+- **⚡ Fast & Lean**: Minimal overhead. Runs in seconds on every push.
 
-## Inputs
+---
 
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `nvidia-api-key` | ✅ | — | NVIDIA NIM API key |
-| `model` | ❌ | `nvidia/nemotron-3-ultra-550b-a55b` | LLM model |
-| `max-diff-lines` | ❌ | `400` | Max diff lines to analyze |
-| `post-comment` | ❌ | `true` | Whether to post PR comment |
-| `update-existing` | ❌ | `true` | Update existing comment |
-| `github-token` | ❌ | `${{ github.token }}` | GitHub token |
+## 💻 How it Works
 
-## Outputs
+1. **Diff Extraction**: Reads the PR's git diff and metadata from the GitHub API.
+2. **Context Cleaning**: Strips out noise like lockfiles and large assets to focus on logic.
+3. **AI Analysis**: Sends the cleaned diff to `nvidia/nemotron-4-340b-instruct`.
+4. **Feedback Loop**: Posts a structured summary directly to the PR comment thread.
 
-| Output | Description |
-|--------|-------------|
-| `summary` | The generated PR summary in markdown |
+---
 
-## Features
+## 🛠️ Configuration Options
 
-- ✅ Posts summary as PR comment automatically
-- ✅ Updates existing comment on re-runs (no duplicate comments)
-- ✅ Skips draft PRs
-- ✅ Works with any programming language
-- ✅ Cites specific files and what changed in each
-- ✅ Identifies risks and edge cases to test
-- ✅ Uses NVIDIA's free Nemotron-Ultra 550B model
+| Input | Required | Description |
+|:---|:---|:---|
+| `nvidia-api-key` | **Yes** | Your free API key from [build.nvidia.com](https://build.nvidia.com) |
+| `github-token` | **Yes** | Usually `${{ secrets.GITHUB_TOKEN }}` |
+| `model` | No | NVIDIA model ID (Default: `nemotron-ultra`) |
+| `max-diff-length`| No | Max characters to analyze (Default: `10000`) |
+| `ignore-files` | No | Glob patterns to ignore (e.g., `*.lock, dist/*`) |
 
-## Powered By
+---
 
-- **`nvidia/nemotron-3-ultra-550b-a55b`** — 550B parameter reasoning model (free tier)
+## 🤝 Contributing
 
-## License
+We love contributions! Check out our [Contributing Guide](CONTRIBUTING.md) to get started.
 
-MIT
+---
 
-## Versioning
+## 📄 License
 
-This action uses semantic versioning. Always pin to a major tag for stability:
+Distributed under the MIT License. See `LICENSE` for more information.
 
-```yaml
-- uses: yourusername/pr-brief@v1   # Stable, gets non-breaking updates
-- uses: yourusername/pr-brief@v1.0.0  # Locked to exact version
-```
+---
 
-## Versioning
+## 💖 Star History
 
-This action uses semantic versioning. Always pin to a major tag for stability:
-
-```yaml
-- uses: yourusername/pr-brief@v1   # Stable, gets non-breaking updates
-- uses: yourusername/pr-brief@v1.0.0  # Locked to exact version
-```
+[![Star History Chart](https://api.star-history.com/svg?repos=HayreBuilds/pr-brief&type=Date)](https://star-history.com/#HayreBuilds/pr-brief&Date)
