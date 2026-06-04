@@ -1,0 +1,24 @@
+name: PR Brief
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  pr-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summarize PR
+        uses: yourusername/pr-brief@v1
+        with:
+          nvidia-api-key: ${{ secrets.NVIDIA_API_KEY }}
+          # Optional: change the model
+          # model: meta/llama-3.3-70b-instruct
+          # Optional: limit diff size sent to AI
+          # max-diff-lines: 300
+          # Optional: update existing comment instead of creating new ones
+          update-existing: true
