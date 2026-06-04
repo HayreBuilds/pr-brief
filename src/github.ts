@@ -113,3 +113,20 @@ export function categorizeFiles(files: PullRequestFile[]): Record<string, PullRe
   }
   return cats;
 }
+
+export function filterSignificantFiles(files: PullRequestFile[]): PullRequestFile[] {
+  const SKIP = [".lock", ".sum", ".mod", "package-lock", "yarn.lock", "pnpm-lock", ".min.js", ".map"];
+  return files.filter(f => !SKIP.some(s => f.filename.includes(s)));
+}
+
+export function categorizeFiles(files: PullRequestFile[]): Record<string, PullRequestFile[]> {
+  const cats: Record<string, PullRequestFile[]> = { source: [], tests: [], docs: [], config: [], other: [] };
+  for (const f of files) {
+    if (/test|spec|__tests__/.test(f.filename)) cats["tests"]!.push(f);
+    else if (/\.(md|txt|rst)$/.test(f.filename)) cats["docs"]!.push(f);
+    else if (/\.(json|yaml|yml|toml|env)$/.test(f.filename)) cats["config"]!.push(f);
+    else if (/\.(ts|js|py|go|rs|rb|java)$/.test(f.filename)) cats["source"]!.push(f);
+    else cats["other"]!.push(f);
+  }
+  return cats;
+}
