@@ -1,0 +1,16 @@
+{
+  "name": "pr-brief",
+  "version": "1.0.0",
+  "description": "GitHub Action that auto-summarizes pull requests with AI — what changed, why it matters, risks, and what to test.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["github-action", "pull-request", "ai", "code-review", "nvidia", "nim"],
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.5.0" },
+  "engines": { "node": ">=20.0.0" }
+}
