@@ -81,3 +81,12 @@ export const AVAILABLE_MODELS = [
 ] as const;
 
 export type AvailableModel = typeof AVAILABLE_MODELS[number];
+
+export const AVAILABLE_MODELS = [
+  "nvidia/nemotron-3-ultra-550b-a55b",
+  "meta/llama-3.3-70b-instruct",
+  "mistralai/mistral-large-2-instruct",
+  "qwen/qwen2.5-72b-instruct",
+] as const;
+
+export type AvailableModel = typeof AVAILABLE_MODELS[number];
