@@ -1,0 +1,40 @@
+name: 'PR Brief'
+description: 'AI-powered pull request summarizer. Posts a clean summary as a PR comment — what changed, why it matters, risks, and what to test.'
+author: 'pr-brief'
+
+branding:
+  icon: 'message-square'
+  color: 'blue'
+
+inputs:
+  nvidia-api-key:
+    description: 'NVIDIA NIM API key (free at https://build.nvidia.com)'
+    required: true
+  model:
+    description: 'LLM model to use for summarization'
+    required: false
+    default: 'nvidia/nemotron-3-ultra-550b-a55b'
+  max-diff-lines:
+    description: 'Maximum number of diff lines to send to the model'
+    required: false
+    default: '400'
+  post-comment:
+    description: 'Whether to post the summary as a PR comment'
+    required: false
+    default: 'true'
+  update-existing:
+    description: 'Update existing pr-brief comment instead of creating a new one'
+    required: false
+    default: 'true'
+  github-token:
+    description: 'GitHub token for posting comments'
+    required: false
+    default: '${{ github.token }}'
+
+outputs:
+  summary:
+    description: 'The generated PR summary in markdown'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
