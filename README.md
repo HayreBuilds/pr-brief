@@ -122,3 +122,12 @@ This action uses semantic versioning. Always pin to a major tag for stability:
 - uses: yourusername/pr-brief@v1   # Stable, gets non-breaking updates
 - uses: yourusername/pr-brief@v1.0.0  # Locked to exact version
 ```
+
+## Versioning
+
+This action uses semantic versioning. Always pin to a major tag for stability:
+
+```yaml
+- uses: yourusername/pr-brief@v1   # Stable, gets non-breaking updates
+- uses: yourusername/pr-brief@v1.0.0  # Locked to exact version
+```
